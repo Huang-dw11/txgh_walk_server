@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dromara.walk.mapper.WalkStepSyncLogMapper">
+
+    <select id="selectLatestSyncTimeByDate" resultType="java.util.Map">
+        select date_format(sync_date, '%Y-%m-%d') as sync_date,
+               max(sync_time) as last_sync_time
+        from walk_step_sync_log
+        where member_id = #{memberId} and activity_id = #{activityId}
+        group by sync_date
+    </select>
+
+    <select id="countByDate" resultType="int">
+        select count(*)
+        from walk_step_sync_log
+        where member_id = #{memberId} and activity_id = #{activityId}
+        and date_format(sync_date, '%Y-%m-%d') = #{syncDate}
+    </select>
+
+</mapper>

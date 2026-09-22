@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dromara.walk.mapper.WalkRankingMapper">
+
+    <resultMap type="org.dromara.walk.domain.vo.WalkRankingVo" id="WalkRankingResult">
+        <id property="rankingId" column="ranking_id"/>
+    </resultMap>
+
+    <select id="selectRankingByType" resultMap="WalkRankingResult">
+        <include refid="selectRankingByTypeSql"/>
+    </select>
+
+    <select id="selectAllRankingByType" resultMap="WalkRankingResult">
+        <include refid="selectRankingByTypeSql"/>
+    </select>
+
+    <sql id="selectRankingByTypeSql">
+        select * from walk_ranking
+        where activity_id = #{activityId}
+          and ranking_type = #{rankingType}
+        <if test="recordDate != null">and date_format(record_date, '%Y-%m-%d') = #{recordDate}</if>
+        order by rank_no
+    </sql>
+
+    <update id="replaceWalkRanking">
+        replace into walk_ranking(ranking_id, activity_id, ranking_type, record_date, member_id, rank_no, rank_value, dept_id, update_time)
+        values(#{rankingId}, #{activityId}, #{rankingType}, #{recordDate}, #{memberId}, #{rankNo}, #{rankValue}, #{deptId}, sysdate())
+    </update>
+
+    <delete id="deleteRankingByType">
+        delete from walk_ranking
+        where activity_id = #{activityId}
+          and ranking_type = #{rankingType}
+        <if test="recordDate != null">and date_format(record_date, '%Y-%m-%d') = #{recordDate}</if>
+    </delete>
+
+    <insert id="batchInsertRanking">
+        insert into walk_ranking(ranking_id, activity_id, ranking_type, record_date, member_id, rank_no, rank_value, dept_id, update_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.rankingId}, #{item.activityId}, #{item.rankingType}, #{item.recordDate}, #{item.memberId}, #{item.rankNo}, #{item.rankValue}, #{item.deptId}, sysdate())
+        </foreach>
+    </insert>
+
+</mapper>

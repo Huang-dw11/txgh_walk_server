@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dromara.walk.mapper.WalkContinuousCheckinMapper">
+
+    <select id="selectCurrentContinuous" resultType="org.dromara.walk.domain.WalkContinuousCheckin">
+        select * from walk_continuous_checkin
+        where member_id = #{memberId} and activity_id = #{activityId} and is_broken = 'N'
+        limit 1
+    </select>
+
+    <update id="breakContinuousCheckin" parameterType="org.dromara.walk.domain.WalkContinuousCheckin">
+        update walk_continuous_checkin
+        set is_broken = 'Y',
+            broken_date = #{brokenDate},
+            update_time = sysdate()
+        where record_id = #{recordId}
+    </update>
+
+</mapper>

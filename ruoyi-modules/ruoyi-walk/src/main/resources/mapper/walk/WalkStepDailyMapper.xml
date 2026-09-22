@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dromara.walk.mapper.WalkStepDailyMapper">
+
+    <select id="selectMemberStepByDate" resultType="org.dromara.walk.domain.WalkStepDaily">
+        select * from walk_step_daily
+        where member_id = #{memberId}
+          and activity_id = #{activityId}
+          and date_format(record_date, '%Y-%m-%d') = #{recordDate}
+    </select>
+
+    <select id="selectDailyRanking" resultType="org.dromara.walk.domain.WalkStepDaily">
+        select d.* from walk_step_daily d
+        inner join walk_member m on d.member_id = m.member_id
+        where d.activity_id = #{activityId}
+          and (m.abnormal_flag is null or m.abnormal_flag != '1')
+          and date_format(d.record_date, '%Y-%m-%d') = #{recordDate}
+        order by d.effective_steps desc
+    </select>
+
+    <update id="updateLocked">
+        update walk_step_daily
+        set is_locked = 'Y', update_time = sysdate()
+        where activity_id = #{activityId}
+          and record_date <![CDATA[ <= ]]> #{recordDate}
+          and is_locked = 'N'
+    </update>
+
+    <insert id="upsertWalkStepDaily">
+        insert into walk_step_daily(record_id, activity_id, member_id, record_date, wechat_steps, effective_steps, is_target, is_checkin, checkin_time, create_time, update_time)
+        values(#{recordId}, #{activityId}, #{memberId}, #{recordDate}, #{wechatSteps}, #{effectiveSteps}, #{isTarget}, #{isCheckin}, #{checkinTime}, sysdate(), sysdate())
+        on duplicate key update
+        wechat_steps = values(wechat_steps),
+        effective_steps = values(effective_steps),
+        is_target = values(is_target),
+        is_checkin = values(is_checkin),
+        checkin_time = if(is_checkin='N', values(checkin_time), checkin_time),
+        update_time = sysdate()
+    </insert>
+
+    <select id="selectUnsettledByDate" resultType="org.dromara.walk.domain.WalkStepDaily">
+        select * from walk_step_daily
+        where member_id = #{memberId}
+          and activity_id = #{activityId}
+          and is_settled = 'N'
+          and record_date <![CDATA[ >= ]]> #{activityStart}
+          and record_date <![CDATA[ < ]]> #{beforeDate}
+        order by record_date asc
+    </select>
+
+    <update id="markSettled">
+        update walk_step_daily
+        set is_settled = 'Y', update_time = sysdate()
+        where member_id = #{memberId}
+          and activity_id = #{activityId}
+          and date_format(record_date, '%Y-%m-%d') = #{recordDate}
+    </update>
+
+</mapper>

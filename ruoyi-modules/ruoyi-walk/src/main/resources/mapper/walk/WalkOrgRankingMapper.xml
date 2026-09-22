@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dromara.walk.mapper.WalkOrgRankingMapper">
+
+    <resultMap id="WalkOrgRankingResult" type="org.dromara.walk.domain.vo.WalkOrgRankingVo">
+        <id property="rankingId" column="ranking_id"/>
+    </resultMap>
+
+    <select id="selectWalkOrgRankingList" parameterType="org.dromara.walk.domain.WalkOrgRanking" resultMap="WalkOrgRankingResult">
+        <include refid="selectWalkOrgRankingListSql"/>
+    </select>
+
+    <select id="selectAllWalkOrgRankingList" parameterType="org.dromara.walk.domain.WalkOrgRanking" resultMap="WalkOrgRankingResult">
+        <include refid="selectWalkOrgRankingListSql"/>
+    </select>
+
+    <sql id="selectWalkOrgRankingListSql">
+        select * from walk_org_ranking
+        where 1=1
+        <if test="ranking.activityId != null">and activity_id = #{ranking.activityId}</if>
+        order by rank_no
+    </sql>
+
+    <delete id="deleteOrgRankingByActivity">
+        delete from walk_org_ranking where activity_id = #{activityId}
+    </delete>
+
+    <insert id="batchInsertOrgRanking" parameterType="java.util.List">
+        insert into walk_org_ranking(
+            ranking_id, activity_id, dept_id, member_count, signup_count, approved_count,
+            participation_rate, checkin_rate, avg_score, avg_steps, award_count,
+            org_score, rank_no, update_time
+        ) values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.rankingId}, #{item.activityId}, #{item.deptId}, #{item.memberCount}, #{item.signupCount}, #{item.approvedCount},
+             #{item.participationRate}, #{item.checkinRate}, #{item.avgScore}, #{item.avgSteps}, #{item.awardCount},
+             #{item.orgScore}, #{item.rankNo}, sysdate())
+        </foreach>
+    </insert>
+
+</mapper>

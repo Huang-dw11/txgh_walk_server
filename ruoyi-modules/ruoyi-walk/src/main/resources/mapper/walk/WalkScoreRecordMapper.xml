@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.dromara.walk.mapper.WalkScoreRecordMapper">
+
+    <select id="selectScoreRecordUnique" resultType="org.dromara.walk.domain.WalkScoreRecord">
+        select * from walk_score_record
+        where member_id = #{memberId}
+          and score_type = #{scoreType}
+          and date_format(related_date, '%Y-%m-%d') = #{relatedDate}
+    </select>
+
+    <select id="selectMemberScoreRecords" resultType="org.dromara.walk.domain.WalkScoreRecord">
+        select * from walk_score_record
+        where member_id = #{memberId}
+          and activity_id = #{activityId}
+        order by related_date
+    </select>
+
+</mapper>
