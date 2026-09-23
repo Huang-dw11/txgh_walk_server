@@ -273,6 +273,6 @@ justauth:
 wx:
   miniapp:
     configs:
-      - appid: wxa866a8ccb815abf0       # 小程序 AppID
-        secret: d5b40732b56d101410b0d278de5fea71   # 小程序 AppSecret
+      - appid:        # 小程序 AppID
+        secret:    # 小程序 AppSecret
         msgDataFormat: JSON
